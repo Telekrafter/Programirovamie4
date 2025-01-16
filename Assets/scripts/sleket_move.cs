@@ -11,6 +11,7 @@ public class sleket_move : MonoBehaviour
     Rigidbody rb;
     private bool ONground;
     private float horizontal;
+    public GameObject Game_Over_Screen;
     // Start is called before the first frame update
     void Start()
     {
@@ -76,7 +77,12 @@ public class sleket_move : MonoBehaviour
             ONground = true;
             Debug.Log("spaceddd");
         }
+        if (collision.gameObject.CompareTag("die"))
+        {
+           Game_Over_Screen.SetActive(true);
 
+
+        }
 
     }
     private void OnTriggerEnter(Collider other)
@@ -90,5 +96,5 @@ public class sleket_move : MonoBehaviour
         }
 
     }
-
-}
+    
+}   

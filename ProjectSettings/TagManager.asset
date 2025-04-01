@@ -8,6 +8,9 @@ TagManager:
   - coin
   - die
   - grave
+  - win
+  - ghost
+  - player
   layers:
   - Default
   - TransparentFX

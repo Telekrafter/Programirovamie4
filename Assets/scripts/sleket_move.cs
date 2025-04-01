@@ -11,7 +11,16 @@ public class sleket_move : MonoBehaviour
     Rigidbody rb;
     private bool ONground;
     private float horizontal;
+    private float vertical;
+    private bool isMove;
     public GameObject Game_Over_Screen;
+    public GameObject Game_Win_Screen;
+    public int Health = 100;
+    public Health_bar health_bar;
+    private float vertical_mouse = 0f;
+    private float horizontal_mouse = 0f;
+    public AudioSource ghost_sound_die;
+    public AudioSource coin_sound;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,46 +36,34 @@ public class sleket_move : MonoBehaviour
     void Update()
     {
         horizontal = Input.GetAxis("Horizontal");
-        if (Input.GetKey(KeyCode.W))
+        vertical = Input.GetAxis("Vertical");
+        if (horizontal != 0 || vertical != 0)
         {
-            transform.Translate(Vector3.forward * Time.deltaTime * skeleton_speed);
+            transform.Translate(new Vector3(horizontal, 0, vertical) * Time.deltaTime * skeleton_speed);
+            isMove = true;
             skelet_idet_bejit.Play("Walk");
-
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(Vector3.back * Time.deltaTime * skeleton_speed);
-            skelet_idet_bejit.Play("Walk");
-
-        }
-
-
-        else if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(Vector3.left * Time.deltaTime * skeleton_speed);
-            skelet_idet_bejit.Play("Walk");
-
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            transform.Translate(Vector3.right * Time.deltaTime * skeleton_speed);
-            skelet_idet_bejit.Play("Walk");
-
         }
         else
         {
             skelet_idet_bejit.Play("Idle");
+        }
 
-        }   
         if (Input.GetKey(KeyCode.Space) && ONground)
         {
             ONground = false;
-            Debug.Log("space");
+           
             rb.AddForce(new Vector3(0, 1000 ,0), ForceMode.Impulse);
             
 
         }
-        transform.Rotate(Vector3.up * Time.deltaTime * skeleton_speed * horizontal);
+        if (Health == 0)
+        {
+            Game_Over_Screen.SetActive(true);
+
+        }
+        vertical_mouse -= Input.GetAxis("Mouse Y") * 2f;
+        horizontal_mouse += Input.GetAxis("Mouse X") * 2f;
+        transform.eulerAngles = new Vector3(0f, horizontal_mouse, 0f);
 
     }
     private void OnCollisionEnter(Collision collision)
@@ -75,26 +72,38 @@ public class sleket_move : MonoBehaviour
         if (collision.gameObject.CompareTag("ground"))
         {
             ONground = true;
-            Debug.Log("spaceddd");
+            
         }
         if (collision.gameObject.CompareTag("die"))
         {
            Game_Over_Screen.SetActive(true);
-
-
         }
+        if (collision.gameObject.CompareTag("win"))
+        {
+            Game_Win_Screen.SetActive(true);
+        }
+        
 
     }
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("coin"))
         {
-            Debug.Log(monet);
+            coin_sound.Play();
             monet++;
             text_board.text = "Черепов:" + monet.ToString();
             Destroy(other.gameObject);
         }
+        if (other.gameObject.CompareTag("ghost"))
+        {
+            ghost_sound_die.Play();
+            Health -= 20;
+            health_bar.set_health(Health);
+            
+            Destroy(other.gameObject);
+            
 
+        }
     }
     
 }   
